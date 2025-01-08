@@ -21,10 +21,14 @@ export default function Home() {
 
 
     const handleFilter = () => {
-        // if (dateRange.from < 2020 || dateRange.to < 2020) {
-        //     setError('Please enter a year from 2020 or later.');
-        //     return;
-        // }
+        if (dateRange.from < 2000 || dateRange.to < 2020) {
+            setError('Please enter a year from 2020 or later.');
+            return;
+        }
+        if (dateRange.from > dateRange.to) {
+            setError('From Year cannot be greater than To Year');
+            return;
+        }
         setError(null);
 
         const result = data.filter((item: { date: string, revenue: string, netIncome: string }) => {
