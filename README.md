@@ -2,6 +2,10 @@
 
 Welcome to the Financial Data Filtering App! This web application allows users to view, filter, and analyze Apple's annual income statements using real financial data from the Financial Modeling Prep API.
 
+```bash
+Live site URL: https://vg-takehome.onrender.com
+```
+
 ## Project Overview
 This application fetches data from an API endpoint that provides Apple's annual income statements and displays them in an easy-to-read table. Users can filter data by date range, revenue, and net income. Additionally, users can sort the table by date, revenue, or net income in ascending or descending order.
 
@@ -68,11 +72,15 @@ This application fetches data from an API endpoint that provides Apple's annual 
    ```bash
    npm install
    ```
-4. Start the development server:
+4. Set .env variables:
+   ```bash
+   VITE_APP_API_KEY=<api key>
+   ```
+5. Start the development server:
    ```bash
    npm run dev
    ```
-5. Open the provided link from the terminal in your browser.
+6. Navigate to the provided link from the terminal in your browser if you are not automatically navigated.
 
 ## Notes
 - The API endpoint used returns a maximum of 5 entries. This is a limitation from the data provider.
