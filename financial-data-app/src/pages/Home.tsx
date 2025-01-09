@@ -1,39 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { fetchFinancialData } from '../services/api';
 import FinancialTable from '../components/FinancialTable';
-import ReactSlider from 'react-slider';
+import Slider from '@mui/material/Slider';
 
-const RangeSlider = ({ min, max, step, value, onChange }) => {
-    return (
-        <ReactSlider
-            className="horizontal-slider"
-            thumbClassName="thumb"
-            trackClassName="track"
-            min={min}
-            max={max}
-            step={step}
-            value={value}
-            onChange={onChange}
-            renderThumb={(props, state) => <div {...props}>{state.valueNow}</div>}
-        />
-    );
-};
+const RangeSlider = ({ min, max, value, onChange }) => (
+    <Slider
+        value={value}
+        min={min}
+        max={max}
+        onChange={(_, newValue) => onChange(newValue)}
+        valueLabelDisplay="auto"
+    />
+);
 
 export default function Home() {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [dateRange, setDateRange] = useState({ from: 2020, to: 2024 });
-    const [error, setError] = useState<string | null>(null);
     const [revenueRange, setRevenueRange] = useState({ min: 0, max: 500 });
     const [incomeRange, setIncomeRange] = useState({ min: -50, max: 200 });
     const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
     const [currentPage, setCurrentPage] = useState(1);
+    const [error, setError] = useState('');
+
     const rowsPerPage = 10;
-
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-
-    const paginatedData = filteredData.slice(startIndex, endIndex);
 
     useEffect(() => {
         fetchFinancialData().then((res) => {
@@ -47,24 +37,18 @@ export default function Home() {
     }, [filteredData]);
 
     const handleFilter = () => {
-        if (dateRange.from < 2000 || dateRange.to < 2020) {
-            setError('Please enter a year from 2020 or later.');
-            return;
-        }
         if (dateRange.from > dateRange.to) {
-            setError('From Year cannot be greater than To Year');
+            setError('The "From Year" cannot be greater than the "To Year".');
             return;
         }
-        setError(null);
 
-        const result = data.filter((item: { date: string; revenue: number; netIncome: number }) => {
+        setError('');
+        const result = data.filter((item: { date: string, revenue: number, netIncome: number }) => {
             const inDateRange = item.date >= `${dateRange.from}-01-01` && item.date <= `${dateRange.to}-12-31`;
             const inRevenueRange =
-                (!revenueRange.min || item.revenue >= revenueRange.min * 1e9) &&
-                (!revenueRange.max || item.revenue <= revenueRange.max * 1e9);
+                item.revenue >= revenueRange.min * 1e9 && item.revenue <= revenueRange.max * 1e9;
             const inIncomeRange =
-                (!incomeRange.min || item.netIncome >= incomeRange.min * 1e9) &&
-                (!incomeRange.max || item.netIncome <= incomeRange.max * 1e9);
+                item.netIncome >= incomeRange.min * 1e9 && item.netIncome <= incomeRange.max * 1e9;
 
             return inDateRange && inRevenueRange && inIncomeRange;
         });
@@ -72,11 +56,8 @@ export default function Home() {
         setFilteredData(result);
     };
 
-    const handleSort = (key: string) => {
-        let direction = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
+    const handleSort = (key) => {
+        const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
         setSortConfig({ key, direction });
 
         const sortedData = [...filteredData].sort((a, b) => {
@@ -88,112 +69,115 @@ export default function Home() {
         setFilteredData(sortedData);
     };
 
+    const paginatedData = filteredData.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+
     return (
-        <div>
+        <div className="flex flex-col lg:flex-row gap-6">
             {/* Filter Section */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
+            <div className="flex flex-col lg:w-1/2 gap-6">
+                {/* Date Range Filter */}
                 <div className="flex flex-col">
-                    <label className="text-gray-700 font-medium">From Year</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">From Year</label>
                     <input
                         type="number"
                         value={dateRange.from}
-                        onChange={(e) => setDateRange({ ...dateRange, from: +e.target.value })}
-                        className="border rounded px-4 py-2 focus:ring focus:ring-blue-300"
+                        onChange={(e) =>
+                            setDateRange((prev) => ({ ...prev, from: +e.target.value }))
+                        }
+                        className="border rounded px-4 py-2 focus:ring focus:ring-blue-300 dark:bg-gray-800"
                         placeholder="2020"
                     />
                 </div>
                 <div className="flex flex-col">
-                    <label className="text-gray-700 font-medium">To Year</label>
+                    <label className="font-medium text-gray-700 dark:text-gray-300">To Year</label>
                     <input
                         type="number"
                         value={dateRange.to}
-                        onChange={(e) => setDateRange({ ...dateRange, to: +e.target.value })}
-                        className="border rounded px-4 py-2 focus:ring focus:ring-blue-300"
+                        onChange={(e) =>
+                            setDateRange((prev) => ({ ...prev, to: +e.target.value }))
+                        }
+                        className="border rounded px-4 py-2 focus:ring focus:ring-blue-300 dark:bg-gray-800"
                         placeholder="2024"
                     />
                 </div>
 
-                <div className="flex flex-wrap gap-4 mt-4">
-                    <div className="filter-section">
-                        <div>
-                            <h3>{"Revenue (in billions)"}</h3>
-                            <RangeSlider
-                                min={0}
-                                max={500}
-                                step={1}
-                                value={[revenueRange.min, revenueRange.max]}
-                                onChange={([min, max]) => setRevenueRange({ min, max })}
-                            />
-                            <p>{`Range: $${revenueRange.min}B - $${revenueRange.max}B`}</p>
-                        </div>
-                        <div>
-                            <h3>{"Net Income (in billions)"}</h3>
-                            <RangeSlider
-                                min={-50}
-                                max={200}
-                                step={1}
-                                value={[incomeRange.min, incomeRange.max]}
-                                onChange={([min, max]) => setIncomeRange({ min, max })}
-                            />
-                            <p>{`Range: $${incomeRange.min}B - $${incomeRange.max}B`}</p>
-                        </div>
-                    </div>
+                {/* Revenue and Net Income Range Filters */}
+                <div>
+                    <h3 className="font-medium text-gray-700 dark:text-gray-300">Revenue (in billions)</h3>
+                    <RangeSlider
+                        min={0}
+                        max={500}
+                        value={[revenueRange.min, revenueRange.max]}
+                        onChange={([min, max]) => setRevenueRange({ min, max })}
+                    />
+                    <p>{`Range: $${revenueRange.min}B - $${revenueRange.max}B`}</p>
                 </div>
-                {error && <div className="text-red-500 mt-2">{error}</div>}
+                <div>
+                    <h3 className="font-medium text-gray-700 dark:text-gray-300">Net Income (in billions)</h3>
+                    <RangeSlider
+                        min={-50}
+                        max={200}
+                        value={[incomeRange.min, incomeRange.max]}
+                        onChange={([min, max]) => setIncomeRange({ min, max })}
+                    />
+                    <p>{`Range: $${incomeRange.min}B - $${incomeRange.max}B`}</p>
+                </div>
+
+                {error && <p className="text-red-500">{error}</p>}
+
                 <button
                     onClick={handleFilter}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition"
+                    className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
                 >
-                    Filter Data
-                </button>
-            </div>
-            {/* Sorting Buttons */}
-            <div className="flex gap-4 mt-4 mb-4">
-                <button
-                    onClick={() => handleSort('date')}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
-                >
-                    Sort by Date {sortConfig.key === 'date' && (
-                        <span className="ml-2">{sortConfig.direction === 'asc' ? '⬆️' : '⬇️'}</span>
-                    )}
-                </button>
-                <button
-                    onClick={() => handleSort('revenue')}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
-                >
-                    Sort by Revenue {sortConfig.key === 'revenue' && (
-                        <span className="ml-2">{sortConfig.direction === 'asc' ? '⬆️' : '⬇️'}</span>
-                    )}
-                </button>
-                <button
-                    onClick={() => handleSort('netIncome')}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
-                >
-                    Sort by Net Income {sortConfig.key === 'netIncome' && (
-                        <span className="ml-2">{sortConfig.direction === 'asc' ? '⬆️' : '⬇️'}</span>
-                    )}
+                    Apply Filters
                 </button>
             </div>
 
-            {/* Data Table */}
-            <FinancialTable data={paginatedData} />
+            {/* Sorting and Data Display */}
+            <div className="lg:w-1/2 flex flex-col gap-4">
+                {/* Sorting Buttons */}
+                <div className="flex gap-4">
+                    {['date', 'revenue', 'netIncome'].map((key) => (
+                        <button
+                            key={key}
+                            onClick={() => handleSort(key)}
+                            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 min-w-85"
+                        >
+                            Sort by {key.charAt(0).toUpperCase() + key.slice(1)}{' '}
+                            {sortConfig.key === key && (
+                                <span>{sortConfig.direction === 'asc' ? '⬆️' : '⬇️'}</span>
+                            )}
+                        </button>
+                    ))}
+                </div>
 
-            {/* Pagination Controls */}
-            <div className="pagination-controls">
-                <button
-                    className="btn"
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                >
-                    Previous
-                </button>
-                <button
-                    className="btn"
-                    onClick={() => setCurrentPage((prev) => prev + 1)}
-                    disabled={endIndex >= filteredData.length}
-                >
-                    Next
-                </button>
+                {/* Financial Table */}
+                <FinancialTable data={paginatedData} />
+
+                {/* Pagination Controls */}
+                <div className="flex justify-between">
+                    <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 dark:text-black"
+                        disabled={currentPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <button
+                        onClick={() =>
+                            setCurrentPage((prev) =>
+                                currentPage * rowsPerPage < filteredData.length ? prev + 1 : prev
+                            )
+                        }
+                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 dark:text-black"
+                        disabled={currentPage * rowsPerPage >= filteredData.length}
+                    >
+                        Next
+                    </button>
+                </div>
             </div>
         </div>
     );

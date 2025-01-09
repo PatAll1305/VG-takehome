@@ -1,17 +1,21 @@
-import Home from './pages/Home';
-import ContactMe from './pages/ContactMe'
 import React from 'react';
+import Home from './pages/Home';
+import ContactMe from './pages/ContactMe';
+import ThemeToggle from './components/ThemeToggle';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row gap-8 w-full items-center justify-center p-6">
-      <div className=" w-full md:w-3/4 bg-white shadow-lg mb-10 rounded-lg p-8 w-full max-w-6xl">
-        <h1 className="text-5xl font-extrabold mb-10 text-blue-600">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex flex-col gap-8 items-center justify-center p-6">
+      <ThemeToggle />
+      <div className="w-full max-w-6xl bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-blue-600 dark:text-yellow-500 mb-10 text-center">
           Apple Financial Data Viewer
         </h1>
         <Home />
       </div>
-      <ContactMe />
+      <div className="w-full max-w-4xl">
+        <ContactMe />
+      </div>
     </div>
   );
 }
