@@ -1,3 +1,5 @@
+import React from "react";
+
 interface FinancialData {
   date: string;
   revenue: number;

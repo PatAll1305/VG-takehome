@@ -1,3 +1,5 @@
+import React from "react"
+
 export default function ContactMe() {
     return (
         <div className="flex flex-wrap justify-evenly gap-10 items-center align-center space-y-6 bg-gray-100 p-6 rounded-lg shadow-md max-w-xs w-96">

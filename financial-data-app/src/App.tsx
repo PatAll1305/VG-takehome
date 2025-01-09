@@ -1,5 +1,6 @@
 import Home from './pages/Home';
 import ContactMe from './pages/ContactMe'
+import React from 'react';
 
 function App() {
   return (
