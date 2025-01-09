@@ -25,7 +25,7 @@ This application fetches data from an API endpoint that provides Apple's annual 
 - **Responsive Design**:
   - The app is fully responsive and adapts to different screen sizes.
 - **Social Media Links**:
-  - Quick access to the developer's LinkedIn, GitHub, email, and phone.
+  - Quick access to the developer's (that's me!) LinkedIn, GitHub, email, and phone.
 
 ## How to Use the App
 1. **View Financial Data**: Upon opening the app, a table with Apple's income statement will be displayed.
@@ -38,19 +38,18 @@ This application fetches data from an API endpoint that provides Apple's annual 
    - Click the buttons above the table to sort by date, revenue, or net income.
    - The table will update to show results in ascending or descending order.
 5. **Access Social Links**:
-   - On the right side of the page, click on buttons with social media logos to access the developer's profiles or contact details.
+   - On the right side of the page, click on buttons with social media logos to access the developer's (that would be me again!) profiles or contact details.
 
 ## Technical Overview
 - **Frontend**: React (TypeScript) with TailwindCSS for styling.
 - **API**: Financial data sourced from Financial Modeling Prep.
-- **Deployment**: The app is deployed on Render for public access.
 
 ## Deployment
-- The app is hosted on Render. Simply visit the provided URL to use the app.
+- The app is hosted on Render. Simply visit the provided URL at the top of this doc to access the app.
 
 ## Developer Contact
 - **LinkedIn**: [Patrick Allen](https://www.linkedin.com/in/patrick-allen-540938246/)
-- **GitHub**: [PatAll1305](https://github.com/PatAll1305)
+- **GitHub**: You're already here! Feel free to check out my other repo's.
 - **Phone**: +1 (773)-789-3105
 - **Email**: patrickallen1305@gmail.com
 
@@ -62,11 +61,11 @@ This application fetches data from an API endpoint that provides Apple's annual 
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/PatAll1305/VG-takehome
    ```
 2. Navigate to the project directory:
    ```bash
-   cd financial-data-filtering-app
+   cd VG-takehome/financial-data-filtering-app
    ```
 3. Install dependencies:
    ```bash
